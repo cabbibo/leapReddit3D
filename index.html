@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<title>AWW</title>
+        <link href="css/main.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div 
+		<div id="container"></div>
+        <div id="info">
+          <a href="http://threejs.org" target="_blank">three.js</a> and 
+          <a href="http://leapmotion.com" target="_blank">Leap Motion</a>
+          - r/AWW Inspiration.
+        </div>
+        <div id="menu">
+
+        <div class="pointer">▲</div>
+		
+
+        <!-- GLOBAL VARIABLES -->
+        <script>
+
+
+        // The Reddit array is what will hold all of our loaded reddit data
+        var reddit = []
+        
+        //The Subreddits we will be pulling from 
+        var subReddits = ["otters","otters","otters","otters","otters"]
+          
+        //This is how many reddit posts that will be loaded per subreddit
+        //This number is extremely large, because currently we are only
+        //pulling a certain type of url: i.imgur.com
+        //This means that we need to make sure there are more
+        //i.imgur.com post then there are number of Images,
+        //or we will get an 'undefined error
+        var redditBufferNumber = 8000000
+
+        //This is how many images we will pull from the above post
+        var numberOfImages = 100
+
+        //This is of json files that have been loaded
+        var loaded = 0
+
+        //A Bool to let us know if all the JSON files have been loaded
+        var allLoaded = false
+
+        
+        //This will define the look and feel of Spiral
+
+        //The length of the spiral
+        var fieldLength =1000
+
+        //Changes the Z and X of the camera position
+        var cameraZ = 300  
+        var cameraX = 0
+
+        //The number of rotations in the spiral
+        var numberOfRotations = 6
+
+        //the radius of the spiral
+        var radius = 300
+
+
+        //This is an array that will hold the temporary positions 
+        //of an object that is being viewed
+        var tempPositions =[]
+          
+        //Variable to hold the pointer object
+        var pointer
+
+        //This is the speed of the field
+        //It will increase and decrease was different gestures are called
+        var speed=1
+
+        //This is the variable that slows the speed of the tube
+        var dampening = .99
+
+        //These variables will keep track of which object is closest 
+        //to the point we are using to 'select' objects
+        var closestObjectDOM; 
+        var closestObject;
+        var closestID;
+
+
+
+        //THREE.JS global variables
+ 		var camera, scene, renderer;
+
+
+        //the Array for the CSS3D objects
+        var objects = [];
+        var objectsDOM = [];
+
+        var mainTarget;
+
+        //this is a global Variable to keep track of the oldframe,
+        //outside the leap loop
+        var oFrame
+
+        </script>
+
+        <script src="lib/leap.js"></script>
+        <script src="lib/three.min.js"></script>
+        <script src="lib/jquery-1.7.1.min.js"></script>
+
+		<script src="lib/tween.min.js"></script>
+        <script src="lib/TrackballControls.js"></script>
+        <script src="lib/LeapControls.js"></script>
+		<script src="lib/CSS3DRenderer.js"></script>
+
+
+        <!-- Our Javascript -->
+        <script src="js/load.js"></script>
+        
+        <!-- Our Initialization Script -->
+        <script src="js/init.js"></script>
+
+        <!-- Script which will do all that 'checks' every loop -->
+        <script src="js/loop.js"></script>
+
+
+
+        <script>
+            //Load the reddits.
+            //This will call the init function and create the scene,
+            //but the JSON data needs to be loaded before anything 
+            //else gets pulled in.
+            letThereBeLight();
+
+
+
+            function updatePositions(){
+                      camZBuff = (cameraZ+(fieldLength/200))
+                      for(var i = 0; i<objects.length; i++){
+                        if(objects[i].selected == false){
+                          updateZ(objects[i].position);
+                        }
+
+                        if(objects[i].tempPosition){
+                          updateZ(objects[i].tempPosition);
+                          //console.log('temp updated');
+                        }
+                    }
+
+
+            }
+
+
+          function updateZ(position){
+              position.z += speed
+              if(position.z >=camZBuff){
+                position.z -= fieldLength
+              }else if(position.z <=(-fieldLength+camZBuff)){
+                position.z += fieldLength
+              }
+          }
+
+		</script>
+	</body>
+</html>
