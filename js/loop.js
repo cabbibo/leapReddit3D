@@ -76,30 +76,18 @@ function onCircle(gesture){
 
 function checkPointables(frame){
   
+  //Get both the current pointables, and the oldFrame pointables
+  //in order to make sure that the movements are more 
+  //stabilized
   numOf = frame.pointables.length
   oNumOf = frame.oFrame.pointables.length
-  //console.log(numOfPointables);
-  //console.log(oNumOf);
-  
 
   //Full Hand
   if(numOf >= 4 && oNumOf >= 4){
     dampening = .9
-
-    //check to see where
-
   }else{
     dampening = .99 
   }
-
-
-  
-
-  //Single pointable (doing 1 pointable buffer)
-  //if(numOf >= 1 ){
-    checkClosest();
-
-  //}
 
   if(numOf >= 4){
     newPos = leapToZ(frame.pointables[0].tipPosition)
@@ -203,25 +191,16 @@ function getDistance(p1,p2){
 function onScreenTap(){
     closestObject.selected = true;
 
-   // console.log(  $('.beingViewed').length);
     removeCurrent();
   
     $(closestObjectDOM).addClass('beingViewed')
     closestObjectDOM.id = closestObjectID
   
- //   console.log( closestObjectDOM.id )
     closestObject.tempPosition = new THREE.Vector3()
     closestObject.tempPosition.x = closestObject.position.x
     closestObject.tempPosition.y = closestObject.position.y
     closestObject.tempPosition.z = closestObject.position.z
-   // console.log(closestObjectDOM.children[0].src)
     closestObjectDOM.children[0].src = reddit[closestObjectID].url
-  // console.log(closestObjectDOM.children[0].offsetWidth)
-  // console.log(closestObjectDOM.children[0].offsetHeight)
-  // console.log($(closestObjectDOM.children[0]));
-   // $(closestObjectDOM).css("width",function(){
-   //
-   // conso
     $('.beingViewed .title').css("width",function(){
 
         return  closestObjectDOM.children[0].clientWidth +"px"
@@ -239,11 +218,45 @@ function onScreenTap(){
 
 }
 
+
+//Removes current Slide, by tweening to its 'tempPosition'
+//TODO: make sure that either:
+//          a) the circle can't move until the the slide has
+//             returned to its position
+//
+//          -or-
+//
+//          b) the tween somehow changes its target, based on if
+//              the target is moving or not 
+//              
+//              //the second would be much more elegant
+//                and may be easier the I imagined because
+//                the target position can possibly move?
+//                *LOOK INTO THIS MORE*
+
 function removeCurrent(){
 
+    //should only be one 'being viewed' object at a time
+    if($('.beingViewed')[0]){
 
+     // console.log($('.beingViewed')[i].id)
+        var id = parseInt($('.beingViewed')[0].id)
+        //if(objects[id-1]){
+         // console.log((objects[id]))
 
-  
+          var target = new THREE.Object3D();
+          target.position = objects[id].tempPosition
+          transformSingle(objects[id],target,500);
+                 
+        //}
+
+        objects[id].selected = false
+   $($('.beingViewed')[0]).removeClass('beingViewed');
+
+    }
+
+     //  $($('.beingViewed')[0]).removeClass('beingViewed');
+/*
     for(var i=0; i<=$('.beingViewed').length; i++){
   
       //console.log($('.beingViewed')[i])
@@ -270,6 +283,8 @@ function removeCurrent(){
       $($('.beingViewed')[i]).removeClass('beingViewed');
 
     }
+
+    */
 
 }
 
